@@ -37,6 +37,7 @@ class PRWD_Autoshipping_Model_Observer
 		if (Mage::getStoreConfig('autoshipping/settings/enabled'))
 		{
 			$country = Mage::getStoreConfig('autoshipping/settings/country_id');
+			Mage::getSingleton('core/session')->setAutoShippingCountry($country);
 
 			Mage::getSingleton('checkout/session')->getQuote()->getShippingAddress()
 				->setCountryId($country)
@@ -74,6 +75,19 @@ class PRWD_Autoshipping_Model_Observer
 
 			return $this;
 		}
-	} 
+	}
+	
+	public function check_country($observer)
+	{
+		if (Mage::getStoreConfig('autoshipping/settings/enabled'))
+		{
+			$country = Mage::getStoreConfig('autoshipping/settings/country_id');
+			$sessCountry = Mage::getSingleton('core/session')->getAutoShippingCountry();
+			
+			if ($country != $sessCountry) {
+				$this->add_shipping($observer);
+			}
+		}
+	}
 }
 ?>
